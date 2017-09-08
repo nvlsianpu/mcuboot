@@ -1,17 +1,10 @@
 # Travis configuration.  Build the simulator and run its tests.
 
-language: rust
-script:
-  - cd sim; cargo build --release
-  - cd sim; cargo run --release -- runall
-  - cd sim; cargo run --release --features sig-rsa -- runall
+env:
+  global:
+    - secure: "XbmV86GSZzwP7MhgcJolpVisvGnB3Rc6iffd0rhTu7ZXDc/ntmXDIvuO1ZYISGkKlQtQ5CQA2wMwMfO1rOggIy30bI3GnDh75E8n55nkrmVtDIRYnP6ABxTMGuPljU8gafcE1VKY331ey1+BGD/4879OBDI8kGXrcCjse6NwjdJELmFZAqcTlXA0wkzUlLRVeELiJizRybd30kmmhVmuDszpQ5TDwcxHJu7TsHQjVJBdpfoP/SIxAPdZBDQ42sRbYiBlE9SDmkVdBPxYvlyQG8aRv7YzP1JzWtlWg+o6CB611tO9OgIpoAOAgq82lWaA0XX/P4KRGgC8CIS4JwQc8SuA1HxLY/nQSl1vhMjQhlBpShTllFBNaaDA6227y9D+gfb27lbmMb/FZ0elTo2ltyeoYLoR7/odauFtOIO3SaxpnEnGdDBmh+KiLazzWEvix5IO5O7dYDyGuQFag0/kfHflBeLSVAPXDBfw/sGJATQERH+D3Ab4GVot/+BFvAeCUakM7GS3KjzQdA/U5+4G2aDLmDWNGo6ZjTGrWiMtAJVRx++RKmLh67s/W4rOlma+XZmFiLOgmov2RuGAuPNrPiBfuNaoGFynjwGPZeBwxlu2AWzIgFCAHelJD5Xf5nyClTPPyDSJj3doHSJBJAJpg0xnU66aADlmS5Doka3u5Gg="
 
-notifications:
-  slack:
-    rooms:
-      - secure: gtGPw+ujyUejh/hIlMZFB1oPQtC5OT/ymZM56GiU/lXiQwcQketQTcB3PNQvTnwk5vXXYeeX5/SpV1VhuwWlvTf3jBp9JBanTcXKg02s+e5myUNC91QMEMiBAQjZng8i4K6sOeYqy4d1mzAHH0BwS1akOsJ/F0jPhNsRF2ksch9x1a8bQwL5GkxO3UrxAe4IB0ulKg67DaFiDPl/WYLR/ZiN+fyNMv+HxJ73J/imnLIONVreAURgdHak4lMB1PVvNdPvsx5t71TtPS801VhniiLUb2pxK19eC3/SU7APYXRWejXcjr/aEoVFWKehXtKAVsEIN4zut8YwewpghTPHbi7uYirla+Ejq501GO7Ux/Y7IYZdqsHV4m8YAEWTHCSUklp2oXnEgyjqoNAu2FhF3PpuD5+EJbOsbG5XdNgKEiFLGA5AWweeoTkt2kjv11vSZDDBRX8PHlRflERIFQHZbhFuAHD+krXEgM3yXs/eV69T2eV58nz07dub+OltbNBauoQcQ2VoRE7+qvDSWAMSYYHJgU+pKcgaf17DG8nUkRGhMODwAq1wevzyU5HLLYAXyVaiho8q+UNRiWdUKJOlYD+I8mwGzdiTrjRlEx/jimECnSxVBNHbc3zkbcLYuuGKwhSrSXPNy6IjRPjJpX78xpIvQIwX+rmq3iR1j8H3Sj0=
-    on_success: always
-
+addons:
   coverity_scan:
     project:
       name: runtimeco/mcuboot
