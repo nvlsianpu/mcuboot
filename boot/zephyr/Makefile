@@ -4,6 +4,7 @@ endif
 subdir-ccflags-y += -I$(PROJECT)/boot/bootutil/include
 subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/include
 subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/targets
+subdir-ccflags-y += -I$(PROJECT)/boot/boot_serial/include
 
 obj-y += main.o
 obj-y += flash_map.o hal_flash.o os.o
@@ -28,3 +29,5 @@ subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/tinycbor/include \
 obj-y += cborattr/
 subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/cborattr/include
 endif
+
+obj-$(CONFIG_MCUBOOT_SERIAL) += ../boot_serial/src/
