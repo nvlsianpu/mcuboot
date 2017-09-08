@@ -7,7 +7,7 @@ env:
 addons:
   coverity_scan:
     project:
-      name: runtimeco/mcuboot
+      name: mcuboot
       version: 0.9
       description: Secure boot for 32-bit Microcontrollers!
     notification_email: utzig@apache.org
