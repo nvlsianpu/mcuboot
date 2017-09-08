@@ -38,10 +38,12 @@ void *os_calloc(size_t nelem, size_t size)
     return buf;
 }
 
+#ifndef __ZEPHYR__
 void os_free(void *ptr)
 {
     k_free(ptr);
 }
+#endif
 
 /*
  * Initialize mbedtls to be able to use the local heap.

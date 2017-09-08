@@ -24,24 +24,39 @@
 
 #include "sysflash/sysflash.h"
 
+#ifdef __ZEPHYR__
+#include <misc/reboot.h>
+#include <misc/byteorder.h>
+#include <misc/__assert.h>
+#include <flash.h>
+#include <crc16.h>
+#include <serial_adapter/serial_adapter.h>
+
+#define CRC16_INITIAL_CRC       0       /* what to seed crc16 with */
+#define CRC_CITT_POLYMINAL 0x1021
+#define ntohs(x) sys_be16_to_cpu(x)
+#define htons(x) sys_cpu_to_be16(x)
+#define BOOT_LOG_LEVEL BOOT_LOG_LEVEL_INFO
+#include "bootutil/bootutil_log.h"
+
+#else
 #include <bsp/bsp.h>
-
-#include <flash_map/flash_map.h>
-#include <hal/hal_flash.h>
 #include <hal/hal_system.h>
-
 #include <os/endian.h>
-#include <os/os.h>
-#include <os/os_malloc.h>
 #include <os/os_cputime.h>
-
 #include <console/console.h>
+#include <crc/crc16.h>
+#endif /* __ZEPHYR__ */
 
 #include <tinycbor/cbor.h>
 #include <tinycbor/cbor_buf_reader.h>
 #include <cborattr/cborattr.h>
 #include <base64/base64.h>
-#include <crc/crc16.h>
+
+#include <flash_map/flash_map.h>
+#include <hal/hal_flash.h>
+#include <os/os.h>
+#include <os/os_malloc.h>
 
 #include <bootutil/image.h>
 
@@ -264,8 +279,13 @@ bs_reset(char *buf, int len)
     cbor_encoder_close_container(&bs_root, &bs_rsp);
 
     boot_serial_output();
+#ifdef __ZEPHYR__
+    k_sleep(250);
+    sys_reboot(SYS_REBOOT_COLD);
+#else
     os_cputime_delay_usecs(250000);
     hal_system_reset();
+#endif
 }
 
 /*
@@ -339,8 +359,14 @@ boot_serial_output(void)
     bs_hdr->nh_len = htons(len);
     bs_hdr->nh_group = htons(bs_hdr->nh_group);
 
+#ifdef __ZEPHYR__
+    crc =  crc16(bs_hdr, sizeof(*bs_hdr), CRC_CITT_POLYMINAL, CRC16_INITIAL_CRC,
+                 false);
+    crc =  crc16(data, len, CRC_CITT_POLYMINAL, crc, true);
+#else
     crc = crc16_ccitt(CRC16_INITIAL_CRC, bs_hdr, sizeof(*bs_hdr));
     crc = crc16_ccitt(crc, data, len);
+#endif
     crc = htons(crc);
 
     console_write(pkt_start, sizeof(pkt_start));
@@ -385,7 +411,11 @@ boot_serial_in_dec(char *in, int inlen, char *out, int *out_off, int maxout)
 
         len = min(len, *out_off - sizeof(uint16_t));
         out += sizeof(uint16_t);
+#ifdef __ZEPHYR__
+        crc = crc16(out, len, CRC_CITT_POLYMINAL, CRC16_INITIAL_CRC, true);
+#else
         crc = crc16_ccitt(CRC16_INITIAL_CRC, out, len);
+#endif
         if (crc || len <= sizeof(crc)) {
             return 0;
         }
@@ -411,10 +441,13 @@ boot_serial_start(int max_input)
     int dec_off;
     int full_line;
 
+#ifdef __ZEPHYR__
+    rc = boot_console_init();
+#else
     rc = console_init(NULL);
     assert(rc == 0);
     console_echo(0);
-
+#endif
     buf = os_malloc(max_input);
     dec = os_malloc(max_input);
     assert(buf && dec);

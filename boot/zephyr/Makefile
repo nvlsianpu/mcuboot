@@ -4,6 +4,7 @@ endif
 subdir-ccflags-y += -I$(PROJECT)/boot/bootutil/include
 subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/include
 subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/targets
+subdir-ccflags-y += -I$(PROJECT)/boot/boot_serial/include
 
 obj-y += main.o
 obj-y += flash_map.o hal_flash.o os.o
@@ -19,3 +20,4 @@ obj-y += ../bootutil/src/
 obj-$(NEED_TINYCRYPT) += ../../ext/tinycrypt/lib/source/
 include $(PROJECT)/ext/tinycrypt/lib/source/Makefile.inc
 obj-$(CONFIG_MCUBOOT_SERIAL) += serial_adapter.o
+obj-$(CONFIG_MCUBOOT_SERIAL) += ../boot_serial/src/
