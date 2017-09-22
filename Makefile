@@ -82,4 +82,7 @@ CFLAGS += -I$(CURDIR)/boot/zephyr/include
 DTC_OVERLAY_FILE := $(CURDIR)/boot/zephyr/dts.overlay
 export DTC_OVERLAY_FILE
 
+KBUILD_KCONFIG = $(CURDIR)/Kconfig
+export KBUILD_KCONFIG
+
 include ${ZEPHYR_BASE}/Makefile.inc
