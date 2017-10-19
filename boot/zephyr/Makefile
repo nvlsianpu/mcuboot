@@ -18,3 +18,4 @@ obj-y += ../bootutil/src/
 
 obj-$(NEED_TINYCRYPT) += ../../ext/tinycrypt/lib/source/
 include $(PROJECT)/ext/tinycrypt/lib/source/Makefile.inc
+obj-$(CONFIG_MCUBOOT_SERIAL) += serial_adapter.o
