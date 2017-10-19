@@ -19,3 +19,9 @@ obj-y += ../bootutil/src/
 obj-$(NEED_TINYCRYPT) += ../../ext/tinycrypt/lib/source/
 include $(PROJECT)/ext/tinycrypt/lib/source/Makefile.inc
 obj-$(CONFIG_MCUBOOT_SERIAL) += serial_adapter.o
+
+ifdef CONFIG_MCUBOOT_SERIAL
+obj-y += tinycbor/
+subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/tinycbor/include \
+-DWITHOUT_OPEN_MEMSTREAM
+endif
