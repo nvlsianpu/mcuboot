@@ -24,4 +24,7 @@ ifdef CONFIG_MCUBOOT_SERIAL
 obj-y += tinycbor/
 subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/tinycbor/include \
 -DWITHOUT_OPEN_MEMSTREAM
+
+obj-y += cborattr/
+subdir-ccflags-y += -I$(PROJECT)/boot/zephyr/cborattr/include
 endif
