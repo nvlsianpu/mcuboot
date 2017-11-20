@@ -29,7 +29,10 @@
 #include "bootutil/image.h"
 #include "bootutil/bootutil.h"
 #include "flash_map/flash_map.h"
+
+#ifdef CONFIG_MCUBOOT_SERIAL
 #include <boot_serial/boot_serial.h>
+#endif
 
 struct device *boot_flash_device;
 
