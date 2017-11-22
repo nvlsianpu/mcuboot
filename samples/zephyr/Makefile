@@ -52,7 +52,8 @@
 # setting this.
 BOOTLOADER_CONFIG ?=
 
-BOARD ?= frdm_k64f
+#BOARD ?= frdm_k64f
+BOARD ?= nrf52_pca10040
 
 .PHONY: check boot hello1 clean_boot clean_hello1 \
 	hello2 clean_hello2 flash_boot flash_hello1 flash_hello2
@@ -75,7 +76,7 @@ FLASH_ALIGNMENT = 8
 
 IMGTOOL = ../../scripts/imgtool.py
 ASSEMBLE = ../../scripts/assemble.py
-PYOCD_FLASHTOOL = pyocd-flashtool
+PYOCD_FLASHTOOL = sudo pyocd-flashtool -t nrf52
 
 SOURCE_DIRECTORY := $(CURDIR)
 BUILD_DIRECTORY := $(CURDIR)/build/$(BOARD)
@@ -155,7 +156,7 @@ hello2: check
 		--align $(FLASH_ALIGNMENT) \
 		--version 1.2 \
 		--included-header \
-		--pad 0x60000 \
+		--pad 0x32000 \
 		$(BUILD_DIR_HELLO2)/zephyr/zephyr.bin \
 		signed-hello2.bin
 
@@ -169,10 +170,10 @@ flash_boot:
 	$(PYOCD_FLASHTOOL) -ce -a 0 mcuboot.bin
 
 flash_hello1:
-	$(PYOCD_FLASHTOOL) -a 0x20000 signed-hello1.bin
+	$(PYOCD_FLASHTOOL) -a 0xc000 signed-hello1.bin
 
 flash_hello2:
-	$(PYOCD_FLASHTOOL) -a 0x80000 signed-hello2.bin
+	$(PYOCD_FLASHTOOL) -a 0x3e000 signed-hello2.bin
 
 flash_full:
 	$(PYOCD_FLASHTOOL) -ce -a 0 full.bin
