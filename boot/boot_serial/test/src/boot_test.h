@@ -32,7 +32,11 @@
 #include "crc/crc16.h"
 #include "testutil/testutil.h"
 #include "hal/hal_flash.h"
+#ifdef __ZEPHYR__
+#include "flash_map/flash_map_extended.h"
+#else
 #include "flash_map/flash_map.h"
+#endif
 
 #include "boot_serial_priv.h"
 

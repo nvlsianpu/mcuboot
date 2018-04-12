@@ -23,7 +23,13 @@
 #include <string.h>
 
 #include "hal/hal_flash.h"
+
+#ifdef __ZEPHYR__
+#include <flash_map/flash_map_extended.h>
+#else
 #include "flash_map/flash_map.h"
+#endif
+
 #include "bootutil/image.h"
 #include "bootutil/sha256.h"
 #include "bootutil/sign_key.h"

@@ -7,7 +7,12 @@
 #include <string.h>
 #include <bootutil/bootutil.h>
 #include <bootutil/image.h>
+
+#ifdef __ZEPHYR__
+#include <flash_map/flash_map_extended.h>
+#else
 #include "flash_map/flash_map.h"
+#endif
 
 #include "../../../boot/bootutil/src/bootutil_priv.h"
 #include "bootsim.h"

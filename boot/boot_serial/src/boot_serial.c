@@ -36,6 +36,7 @@
 #include <serial_adapter/serial_adapter.h>
 #include <base64.h>
 #include <cbor.h>
+#include <flash_map/flash_map_extended.h>
 #else
 #include <bsp/bsp.h>
 #include <hal/hal_system.h>
@@ -46,11 +47,11 @@
 #include <base64/base64.h>
 #include <tinycbor/cbor.h>
 #include <tinycbor/cbor_buf_reader.h>
+#include <flash_map/flash_map.h>
 #endif /* __ZEPHYR__ */
 
 #include <cborattr/cborattr.h>
 
-#include <flash_map/flash_map.h>
 #include <hal/hal_flash.h>
 #include <os/os.h>
 #include <os/os_malloc.h>
