@@ -323,7 +323,11 @@ bs_upload(char *buf, int len)
         if (data_len > fap->fa_size) {
             goto out_invalid_data;
         }
+#ifndef CONFIG_BOOT_ERASE_PROGRESSIVELY
         rc = flash_area_erase(fap, 0, fap->fa_size);
+#else
+        rc = 0;
+#endif
         if (rc) {
             goto out_invalid_data;
         }
@@ -339,6 +343,28 @@ bs_upload(char *buf, int len)
             img_blen -= rem_bytes;
         }
     }
+
+#ifdef CONFIG_BOOT_ERASE_PROGRESSIVELY
+    static off_t off_last = -1;
+    struct flash_sector sector;
+
+    rc = flash_area_sector_from_off(curr_off + img_blen, &sector);
+    if (rc) {
+        BOOT_LOG_ERR("Unable to determine flash sector size");
+        goto out;
+    }
+    if (off_last != sector.fs_off) {
+        off_last = sector.fs_off;
+        BOOT_LOG_INF("Moving to sector 0x%x", sector.fs_off);
+        rc = flash_area_erase(fap, sector.fs_off, sector.fs_size);
+        if (rc) {
+            BOOT_LOG_ERR("Error %d while erasing sector", rc);
+            goto out;
+        }
+    }
+#endif
+
+    BOOT_LOG_INF("Writing at 0x%x until 0x%x", curr_off, curr_off + img_blen);
     rc = flash_area_write(fap, curr_off, img_data, img_blen);
     if (rc == 0) {
         curr_off += img_blen;
@@ -346,6 +372,7 @@ bs_upload(char *buf, int len)
     out_invalid_data:
         rc = MGMT_ERR_EINVAL;
     }
+
 out:
     BOOT_LOG_INF("RX: 0x%x", rc);
     cbor_encoder_create_map(&bs_root, &bs_rsp, CborIndefiniteLength);
