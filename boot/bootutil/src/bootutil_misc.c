@@ -33,6 +33,10 @@
 #include "bootutil/enc_key.h"
 #endif
 
+#ifdef __ZEPHYR__
+LOG_MODULE_DECLARE(mcuboot);
+#endif
+
 int boot_current_slot;
 
 const uint32_t boot_img_magic[] = {

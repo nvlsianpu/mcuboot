@@ -40,6 +40,8 @@ const struct boot_uart_funcs boot_funcs = {
 };
 #endif
 
+LOG_MODULE_REGISTER(mcuboot);
+
 void os_heap_init(void);
 
 #if defined(CONFIG_ARM)

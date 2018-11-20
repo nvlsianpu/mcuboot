@@ -40,6 +40,10 @@
 
 #include "mcuboot_config/mcuboot_config.h"
 
+#ifdef __ZEPHYR__
+LOG_MODULE_DECLARE(mcuboot);
+#endif
+
 static struct boot_loader_state boot_data;
 
 #if defined(MCUBOOT_VALIDATE_SLOT0) && !defined(MCUBOOT_OVERWRITE_ONLY)

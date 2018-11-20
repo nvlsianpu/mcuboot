@@ -25,6 +25,8 @@
 #error Zephyr UART console must been disabled if serial_adapter module is used.
 #endif
 
+LOG_MODULE_REGISTER(serial_adapter);
+
 /** @brief Console input representation
  *
  * This struct is used to represent an input line from a serial interface.
