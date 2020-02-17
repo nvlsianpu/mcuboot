@@ -23,7 +23,7 @@
 #include <usb/usb_device.h>
 
 #ifdef CONFIG_UART_CONSOLE
-#error Zephyr UART console must been disabled if serial_adapter module is used.
+//#error Zephyr UART console must been disabled if serial_adapter module is used.
 #endif
 
 MCUBOOT_LOG_MODULE_REGISTER(serial_adapter);
