@@ -666,6 +666,9 @@ boot_serial_start(const struct boot_uart_funcs *f)
 
     off = 0;
     while (1) {
+#if defined(CONFIG_LOG) && !defined(CONFIG_LOG_IMMEDIATE)
+        k_sleep(5); /* give time to process the log */
+#endif
         rc = f->read(in_buf + off, sizeof(in_buf) - off, &full_line);
         if (rc <= 0 && !full_line) {
             continue;
