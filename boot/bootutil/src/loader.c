@@ -521,14 +521,17 @@ boot_check_header_erased(struct boot_loader_state *state, int slot)
 /**
  * Check if the version of the image is not older than required.
  *
- * @param req         Required minimal image version.
- * @param ver         Version of the image to be checked.
+ * @param req           Required minimal image version.
+ * @param ver           Version of the image to be checked.
+ * @param accept_equal  If true, an equal version number is accepted, otherwise
+ *                      if false it is considered as not sufficient.
  *
- * @return            0 if the version is sufficient, nonzero otherwise.
+ * @return              0 if the version is sufficient, nonzero otherwise.
  */
 static int
 boot_is_version_sufficient(struct image_version *req,
-                           struct image_version *ver)
+                           struct image_version *ver,
+                           bool accept_equal)
 {
     if (ver->iv_major > req->iv_major) {
         return 0;
@@ -544,11 +547,14 @@ boot_is_version_sufficient(struct image_version *req,
         return BOOT_EBADVERSION;
     }
     /* The minor version numbers are equal. */
-    if (ver->iv_revision < req->iv_revision) {
-        return BOOT_EBADVERSION;
+    if (ver->iv_revision > req->iv_revision) {
+        return 0;
+    }
+    if (accept_equal && (ver->iv_revision == req->iv_revision)) {
+        return 0;
     }
 
-    return 0;
+    return BOOT_EBADVERSION;
 }
 #endif
 
@@ -588,7 +594,8 @@ boot_validate_slot(struct boot_loader_state *state, int slot,
         /* Check if version of secondary slot is sufficient */
         rc = boot_is_version_sufficient(
                 &boot_img_hdr(state, BOOT_PRIMARY_SLOT)->ih_ver,
-                &boot_img_hdr(state, BOOT_SECONDARY_SLOT)->ih_ver);
+                &boot_img_hdr(state, BOOT_SECONDARY_SLOT)->ih_ver,
+                true);
         if (rc != 0 && boot_check_header_erased(state, BOOT_PRIMARY_SLOT)) {
             BOOT_LOG_ERR("insufficient version in secondary slot");
             flash_area_erase(fap, 0, fap->fa_size);
@@ -1109,7 +1116,7 @@ boot_verify_slot_dependency(struct boot_loader_state *state,
                                           : BOOT_PRIMARY_SLOT;
     dep_version = &state->imgs[dep->image_id][dep_slot].hdr.ih_ver;
 
-    rc = boot_is_version_sufficient(&dep->image_min_version, dep_version);
+    rc = boot_is_version_sufficient(&dep->image_min_version, dep_version, true);
     if (rc != 0) {
         /* Dependency not satisfied.
          * Modify the swap type to decrease the version number of the image
