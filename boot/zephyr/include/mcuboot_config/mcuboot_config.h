@@ -62,6 +62,10 @@
 #define MCUBOOT_SWAP_USING_MOVE 1
 #endif
 
+#ifdef CONFIG_BOOT_DIRECT_XIP
+#define MCUBOOT_DIRECT_XIP
+#endif
+
 #ifdef CONFIG_LOG
 #define MCUBOOT_HAVE_LOGGING 1
 #endif

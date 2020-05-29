@@ -150,6 +150,10 @@ config BOOT_VALIDATE_SLOT0
 	  every boot, but can mitigate against some changes that are
 	  able to modify the flash image itself.
 
+choice
+	prompt "Alternative image upgrade modes"
+	optional
+
 config BOOT_UPGRADE_ONLY
 	bool "Overwrite image updates instead of swapping"
 	default n
@@ -171,6 +175,18 @@ config BOOT_SWAP_USING_MOVE
 	  This allows a swap upgrade without using a scratch partition,
 	  but is currently limited to all sectors in both slots being of
 	  the same size.
+
+config BOOT_DIRECT_XIP
+	bool "Run the latest image directly from its slot"
+	default n
+	help
+	  If y, mcuboot selects the newest valid image based on the image version
+	  numbers, thereafter the selected image can run directly from its slot
+	  without having to move/copy it into the primary slot. For this reason the
+	  images must be linked to be executed from the given image slot. Using this
+	  mode results in a simpler code path and smaller code size.
+
+endchoice
 
 config BOOT_BOOTSTRAP
 	bool "Bootstrap erased the primary slot from the secondary slot"
