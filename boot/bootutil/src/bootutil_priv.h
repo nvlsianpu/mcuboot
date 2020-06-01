@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2017-2020 Linaro LTD
  * Copyright (c) 2017-2019 JUUL Labs
- * Copyright (c) 2019 Arm Limited
+ * Copyright (c) 2019-2020 Arm Limited
  *
  * Original license:
  *
@@ -66,11 +66,15 @@ struct flash_area;
 /** Number of image slots in flash; currently limited to two. */
 #define BOOT_NUM_SLOTS                  2
 
-#if defined(MCUBOOT_OVERWRITE_ONLY) && defined(MCUBOOT_SWAP_USING_MOVE)
-#error "Please enable only one of MCUBOOT_OVERWRITE_ONLY or MCUBOOT_SWAP_USING_MOVE"
+#if (defined(MCUBOOT_OVERWRITE_ONLY) + \
+     defined(MCUBOOT_SWAP_USING_MOVE) + \
+     defined(MCUBOOT_DIRECT_XIP)) > 1
+#error "Please enable only one of MCUBOOT_OVERWRITE_ONLY, MCUBOOT_SWAP_USING_MOVE or MCUBOOT_DIRECT_XIP"
 #endif
 
-#if !defined(MCUBOOT_OVERWRITE_ONLY) && !defined(MCUBOOT_SWAP_USING_MOVE)
+#if !defined(MCUBOOT_OVERWRITE_ONLY) && \
+    !defined(MCUBOOT_SWAP_USING_MOVE) && \
+    !defined(MCUBOOT_DIRECT_XIP)
 #define MCUBOOT_SWAP_USING_SCRATCH 1
 #endif
 
@@ -166,6 +170,10 @@ struct boot_swap_state {
 
 _Static_assert(BOOT_IMAGE_NUMBER > 0, "Invalid value for BOOT_IMAGE_NUMBER");
 
+#if defined(MCUBOOT_DIRECT_XIP) && (BOOT_IMAGE_NUMBER != 1)
+#error "The MCUBOOT_DIRECT_XIP mode only supports single-image boot (MCUBOOT_IMAGE_NUMBER=1)."
+#endif
+
 #define BOOT_MAX_IMG_SECTORS       MCUBOOT_MAX_IMG_SECTORS
 
 /*
@@ -182,6 +190,18 @@ _Static_assert(BOOT_IMAGE_NUMBER > 0, "Invalid value for BOOT_IMAGE_NUMBER");
                                                     (swap_info) = (image) << 4 \
                                                                 | (type);      \
                                                     }
+
+#define BOOT_LOG_IMAGE_INFO(slot, hdr, state)                                \
+    BOOT_LOG_INF("%-9s slot: version=%u.%u.%u+%u, magic=%5s, image_ok=0x%x", \
+                 ((slot) == BOOT_PRIMARY_SLOT) ? "Primary" : "Secondary",    \
+                 (hdr)->ih_ver.iv_major,                                     \
+                 (hdr)->ih_ver.iv_minor,                                     \
+                 (hdr)->ih_ver.iv_revision,                                  \
+                 (hdr)->ih_ver.iv_build_num,                                 \
+                 ((state)->magic == BOOT_MAGIC_GOOD  ? "good"  :             \
+                  (state)->magic == BOOT_MAGIC_UNSET ? "unset" :             \
+                  "bad"),                                                    \
+                 (state)->image_ok)
 
 /*
  * The current flashmap API does not check the amount of space allocated when

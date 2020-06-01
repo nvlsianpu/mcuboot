@@ -179,7 +179,7 @@ boot_slots_compatible(struct boot_loader_state *state)
     size_t num_sectors_secondary;
     size_t sz0, sz1;
     size_t primary_slot_sz, secondary_slot_sz;
-#ifndef MCUBOOT_OVERWRITE_ONLY
+#if !defined(MCUBOOT_OVERWRITE_ONLY) && !defined(MCUBOOT_DIRECT_XIP)
     size_t scratch_sz;
 #endif
     size_t i, j;
@@ -193,7 +193,7 @@ boot_slots_compatible(struct boot_loader_state *state)
         return 0;
     }
 
-#ifndef MCUBOOT_OVERWRITE_ONLY
+#if !defined(MCUBOOT_OVERWRITE_ONLY) && !defined(MCUBOOT_DIRECT_XIP)
     scratch_sz = boot_scratch_area_size(state);
 #endif
 
@@ -236,7 +236,7 @@ boot_slots_compatible(struct boot_loader_state *state)
             smaller = 2;
             j++;
         }
-#ifndef MCUBOOT_OVERWRITE_ONLY
+#if !defined(MCUBOOT_OVERWRITE_ONLY) && !defined(MCUBOOT_DIRECT_XIP)
         if (sz0 == sz1) {
             primary_slot_sz += sz0;
             secondary_slot_sz += sz1;
@@ -422,7 +422,7 @@ swap_status_source(struct boot_loader_state *state)
     return BOOT_STATUS_SOURCE_NONE;
 }
 
-#ifndef MCUBOOT_OVERWRITE_ONLY
+#if !defined(MCUBOOT_OVERWRITE_ONLY) && !defined(MCUBOOT_DIRECT_XIP)
 /**
  * Calculates the number of sectors the scratch area can contain.  A "last"
  * source sector is specified because images are copied backwards in flash
@@ -541,7 +541,7 @@ boot_swap_sectors(int idx, uint32_t sz, struct boot_loader_state *state,
             /* Write a trailer to the scratch area, even if we don't need the
              * scratch area for status.  We need a temporary place to store the
              * `swap-type` while we erase the primary trailer.
-             */ 
+             */
             rc = swap_status_init(state, fap_scratch, bs);
             assert(rc == 0);
 
