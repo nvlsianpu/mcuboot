@@ -14,6 +14,7 @@
  * limitations under the License.
  */
  /* upsteram mdification*/
+ /* downstream modification*/
 #include <assert.h>
 #include <zephyr.h>
 #include <drivers/gpio.h>
