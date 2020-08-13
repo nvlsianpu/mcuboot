@@ -23,7 +23,7 @@
 #include <usb/usb_device.h>
 #include <soc.h>
 #include <linker/linker-defs.h>
-
+/**/
 #include "target.h"
 
 #include "bootutil/bootutil_log.h"
