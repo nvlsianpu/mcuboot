@@ -15,6 +15,9 @@ incremeting the numbers:
 
 We add pre-release tags of the format MAJOR.MINOR.PATCH-rc1.
 
+We mark in documentation a MCUBoot development version using
+the format MAJOR.MINOR.PATCH-dev.
+
 ## Release Notes
 
 Before making a release, be sure to update the `docs/release-notes.md`
@@ -80,5 +83,18 @@ release happen:
 git push origin HEAD:refs/heads/master
 git push origin va.b.c-rcn
 ```
+
+## Post release actions
+
+Mark the MCUBoot version as a development version. Version number used
+should be specified for the next expected release.
+It should be higher than the last release version by increment the MAJOR or
+the MINOR number. It is not necessary to define the next version precisely as,
+the next release version might be still different as it might be needed to do:
+
+- a patch releases
+- a MINOR release while a MAJOR release was expected
+- a MAJOR release while a MINOR release was expected
+
 
 [semver]: http://semver.org/
