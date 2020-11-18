@@ -32,7 +32,7 @@ set -e
 
 echo '--------------------------------------------------------'
 echo '------------------------ GOOD RSA ----------------------'
-make test-good-rsa
+make test-good-rsa BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 echo "Flashing bootloader"
 make flash_boot
@@ -53,7 +53,7 @@ ok_yn
 
 echo '--------------------------------------------------------'
 echo '------------------------ GOOD ECDSA --------------------'
-make test-good-ecdsa
+make test-good-ecdsa BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 make flash_boot
 echo "Expected result: unable to find bootable image"
@@ -73,7 +73,7 @@ ok_yn
 
 echo '--------------------------------------------------------'
 echo '------------------------ OVERWRITE ---------------------'
-make test-overwrite
+make test-overwrite  BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 make flash_boot
 echo "Expected result: unable to find bootable image"
@@ -93,7 +93,7 @@ ok_yn
 
 echo '--------------------------------------------------------'
 echo '------------------------ BAD RSA -----------------------'
-make test-bad-rsa-upgrade
+make test-bad-rsa-upgrade  BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 make flash_boot
 echo "Expected result: unable to find bootable image"
@@ -113,7 +113,7 @@ ok_yn
 
 echo '--------------------------------------------------------'
 echo '------------------------ BAD ECDSA ---------------------'
-make test-bad-ecdsa-upgrade
+make test-bad-ecdsa-upgrade  BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 make flash_boot
 echo "Expected result: unable to find bootable image"
@@ -133,7 +133,7 @@ ok_yn
 
 echo '--------------------------------------------------------'
 echo '------------------------ NO BOOTCHECK ------------------'
-make test-no-bootcheck
+make test-no-bootcheck  BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 make flash_boot
 echo "Expected result: unable to find bootable image"
@@ -153,7 +153,7 @@ ok_yn
 
 echo '--------------------------------------------------------'
 echo '------------------------ WRONG RSA ---------------------'
-make test-wrong-rsa
+make test-wrong-rsa  BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 make flash_boot
 echo "Expected result: unable to find bootable image"
@@ -173,7 +173,7 @@ ok_yn
 
 echo '--------------------------------------------------------'
 echo '------------------------ WRONG ECDSA -------------------'
-make test-wrong-ecdsa
+make test-wrong-ecdsa  BOARD=nrf52840dk_nrf52840
 pyocd erase --chip
 make flash_boot
 echo "Expected result: unable to find bootable image"

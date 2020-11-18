@@ -30,8 +30,8 @@
 # should generate three "*.bin" files in this directory:
 #
 #   mcuboot.bin: The bootloader itself
-#   signed-hello1.bin: A signed sample.
-#   signed-hello2.bin: An upgrade image, signed and marked for
+#   signed-hello1.hex: A signed sample.
+#   signed-hello2.hex: An upgrade image, signed and marked for
 #   upgrade.
 #
 # "make flash_boot" should flash the bootloader into the flash,
@@ -93,17 +93,17 @@ all: boot hello1 hello2
 full.bin: boot hello1 hello2
 	$(ASSEMBLE) -b $(BUILD_DIR_BOOT) \
 	    -z $(ZEPHYR_BASE) \
-	    -p signed-hello1.bin \
-	    -s signed-hello2.bin \
-	    -o full.bin
+	    -p signed-hello1.hex \
+	    -s signed-hello2.hex \
+	    -o full.hex
 
 clean: clean_boot clean_hello1 clean_hello2
-	@rm -f signed-hello1.bin
-	@rm -f signed-hello2.bin
-	@rm -f mcuboot.bin
+	@rm -f signed-hello1.hex
+	@rm -f signed-hello2.hex
+	@rm -f mcuboot.hex
 
 boot: check
-	@rm -f mcuboot.bin
+	@rm -f mcuboot.hex
 	(mkdir -p $(BUILD_DIR_BOOT) && \
 		cd $(BUILD_DIR_BOOT) && \
 		cmake -DOVERLAY_CONFIG=$(BOOTLOADER_OVERLAY_CONFIG) \
@@ -111,7 +111,7 @@ boot: check
 			-DBOARD=$(BOARD) \
 			$(SOURCE_DIRECTORY)/../../boot/zephyr && \
 		ninja)
-	cp $(BUILD_DIR_BOOT)/zephyr/zephyr.bin mcuboot.bin
+	cp $(BUILD_DIR_BOOT)/zephyr/zephyr.hex mcuboot.hex
 
 clean_boot: check
 	rm -rf $(BUILD_DIR_BOOT)
@@ -130,9 +130,9 @@ hello1: check
 		--header-size $(BOOT_HEADER_LEN) \
 		--align $(FLASH_ALIGNMENT) \
 		--version 1.2 \
-		--slot-size 0x60000 \
-		$(BUILD_DIR_HELLO1)/zephyr/zephyr.bin \
-		signed-hello1.bin
+		--slot-size 0x67000 \
+		$(BUILD_DIR_HELLO1)/zephyr/zephyr.hex \
+		signed-hello1.hex
 
 clean_hello1: check
 	rm -rf $(BUILD_DIR_HELLO1)
@@ -155,10 +155,11 @@ hello2: check
 		--header-size $(BOOT_HEADER_LEN) \
 		--align $(FLASH_ALIGNMENT) \
 		--version 1.2 \
-		--slot-size 0x60000 \
+		--slot-size 0x67000 \
 		--pad \
-		$(BUILD_DIR_HELLO2)/zephyr/zephyr.bin \
-		signed-hello2.bin
+		--hex-addr 0x73000 \
+		$(BUILD_DIR_HELLO2)/zephyr/zephyr.hex \
+		signed-hello2.hex
 
 clean_hello2: check
 	rm -rf $(BUILD_DIR_HELLO2)
@@ -167,16 +168,20 @@ clean_hello2: check
 # are hardcoded at this time.
 
 flash_boot:
-	$(PYOCD) flash -e chip -a 0 mcuboot.bin
+	#$(PYOCD) flash -e chip -a 0 mcuboot.bin
+	nrfjprog -f NRF52 -e && nrfjprog -f NRF52 --program mcuboot.hex && nrfjprog -f NRF52 -r
 
 flash_hello1:
-	$(PYOCD) flash -a 0x20000 signed-hello1.bin
+	#$(PYOCD) flash -a 0x20000 signed-hello1.bin
+	nrfjprog -f NRF52 --program signed-hello1.hex && nrfjprog -f NRF52 -r
 
 flash_hello2:
-	$(PYOCD) flash -a 0x80000 signed-hello2.bin
+	#$(PYOCD) flash -a 0x80000 signed-hello2.hex
+	nrfjprog -f NRF52 --program signed-hello2.hex && nrfjprog -f NRF52 -r
 
 flash_full:
-	$(PYOCD) flash -e chip -a 0 full.bin
+	#$(PYOCD) flash -e chip -a 0 full.bin
+	nrfjprog -f NRF52 -e && nrfjprog -f NRF52 --program full.hex && nrfjprog -f NRF52 -r
 
 # These test- targets reinvoke make with the configuration set to test
 # various configurations.  This will generally be followed by using
