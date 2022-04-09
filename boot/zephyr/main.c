@@ -113,7 +113,6 @@ static inline bool boot_skip_serial_recovery()
 
 BOOT_LOG_MODULE_REGISTER(mcuboot);
 
-#ifdef CONFIG_MCUBOOT_INDICATION_LED
 /*
  * Devicetree helper macro which gets the 'flags' cell from a 'gpios'
  * property, or returns 0 if the property has no 'flags' cell.
@@ -122,6 +121,8 @@ BOOT_LOG_MODULE_REGISTER(mcuboot);
   COND_CODE_1(DT_PHA_HAS_CELL(node, gpios, flags), \
               (DT_GPIO_FLAGS(node, gpios)),        \
               (0))
+
+#ifdef CONFIG_MCUBOOT_INDICATION_LED
 
 /*
  * The led0 devicetree alias is optional. If present, we'll use it
@@ -373,12 +374,26 @@ void zephyr_boot_log_stop(void)
 #if defined(CONFIG_MCUBOOT_SERIAL) || defined(CONFIG_BOOT_USB_DFU_GPIO)
 
 #ifdef CONFIG_MCUBOOT_SERIAL
+#define BUTTON_0_DETECT_DELAY CONFIG_BOOT_SERIAL_DETECT_DELAY
+#else
+#define BUTTON_0_DETECT_DELAY CONFIG_BOOT_USB_DFU_DETECT_DELAY
+#endif
+
+
+#define BUTTON_0_NODE DT_ALIAS(bootloader_button0)
+
+#if DT_NODE_HAS_STATUS(BUTTON_0_NODE, okay) && DT_NODE_HAS_PROP(BUTTON_0_NODE, gpios)
+
+#define BUTTON_0_GPIO_LABEL DT_GPIO_LABEL(BUTTON_0_NODE, gpios)
+#define BUTTON_0_GPIO_PIN DT_GPIO_PIN(BUTTON_0_NODE, gpios)
+#define BUTTON_0_GPIO_FLAGS (GPIO_INPUT | FLAGS_OR_ZERO(BUTTON_0_NODE))
+
+#elif defined(CONFIG_MCUBOOT_SERIAL)
 
 #define BUTTON_0_GPIO_LABEL CONFIG_BOOT_SERIAL_DETECT_PORT
 #define BUTTON_0_GPIO_PIN CONFIG_BOOT_SERIAL_DETECT_PIN
 #define _B0ACTF ((CONFIG_BOOT_SERIAL_DETECT_PIN_VAL) ? GPIO_ACTIVE_HIGH: GPIO_ACTIVE_LOW)
 #define BUTTON_0_GPIO_FLAGS (GPIO_INPUT | GPIO_PULL_UP | _B0ACTF)
-#define BUTTON_0_DETECT_DELAY CONFIG_BOOT_SERIAL_DETECT_DELAY
 
 #elif defined(CONFIG_BOOT_USB_DFU_GPIO)
 
@@ -386,7 +401,6 @@ void zephyr_boot_log_stop(void)
 #define BUTTON_0_GPIO_PIN CONFIG_BOOT_USB_DFU_DETECT_PIN
 #define _B0ACTF ((CONFIG_BOOT_USB_DFU_DETECT_PIN_VAL) ? GPIO_ACTIVE_HIGH: GPIO_ACTIVE_LOW)
 #define BUTTON_0_GPIO_FLAGS (GPIO_INPUT | GPIO_PULL_UP | _B0ACTF)
-#define BUTTON_0_DETECT_DELAY CONFIG_BOOT_USB_DFU_DETECT_DELAY
 
 #endif
 
